@@ -6,7 +6,7 @@
     </head>
     <body>
         <div id="container">
-            <!-- zone de connexion -->
+            <!-- zone de connexion -->  
             
             <form action="verification.php" method="POST">
                 <h1>Connexion</h1>
@@ -22,6 +22,7 @@
                 // Code de vérification 
                 ?>
             </form>
+            <a href="inscription.php">Pas inscrit ?</a>  
         </div>
     </body>
 </html>
