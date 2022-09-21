@@ -1,0 +1,14 @@
+body {
+    background-color: rgb(200, 82, 22);
+    
+    text-align: center;
+}
+
+h1 {
+    font-style: italic;
+    font-size: 20 pm ;
+}
+
+a {
+    text-decoration:none; 
+}
