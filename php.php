@@ -10,6 +10,7 @@
 </head>
 <body>
 <?php 
+      session_start();
       	$servername='localhost';
           $dbname='SLAM3TP1';
           $username='root';
@@ -18,24 +19,58 @@
         $email= strip_tags($_POST["email"]);
         $nom= strip_tags($_POST["nom"]);
         $mdp= strip_tags($_POST["mdp"]);
+        $remdp= strip_tags($_POST["remdp"]);
       
-          try{
+        if($mdp==$remdp){
+          $Newmdp=password_hash($mdp, PASSWORD_DEFAULT);
+            try{
               $conn= new PDO("mysql:host=$servername;dbname=$dbname",$username,$password);
 
-              $requete = $conn->prepare("INSERT INTO `utilisateur`( `Login`, `mdp`, `date_creation`, `email`) VALUES (:nom,PASSWORD(:mdp),CURRENT_DATE,:email);");
-        
-		    $requete->bindValue(':email',$email , PDO::PARAM_STR);
-		    $requete->bindValue(':nom',$nom , PDO::PARAM_STR);
-        $requete->bindValue(':mdp',$mdp , PDO::PARAM_STR);
+              $requete0 = $conn->prepare("SELECT `Login` FROM `utilisateur` WHERE `mdp`=PASSWORD(?);");
+              $requete0->execute([$Newmdp]);
+              $reult = $requete0 ->fetchAll();
+            }
+            catch(PDOException $e){
+              echo "erreur :".$e->getMessage();
+              echo " Le numéro de l'erreur est : ".$e->getCode();
+              die;
+              $_SESSION["verif2"]=false;
+              header('Location:inscription.php ');
+            }
+            if($reult==null)
+            {
+              try{
+                    $conn= new PDO("mysql:host=$servername;dbname=$dbname",$username,$password);
 
-		    $requete->execute();
+                    $requete = $conn->prepare("INSERT INTO `utilisateur`( `Login`, `mdp`, `date_creation`, `email`) VALUES (:nom,:mdp,CURRENT_DATE,:email);");
+              
+                    $requete->bindValue(':email',$email , PDO::PARAM_STR);
+                    $requete->bindValue(':nom',$nom , PDO::PARAM_STR);
+                    $requete->bindValue(':mdp',$Newmdp , PDO::PARAM_STR);
+
+                    $requete->execute();
+                    $_SESSION["verif2"]=true;
+                    header('Location:index.php');
+                  }
+                  catch(PDOException $e){
+                      echo "erreur :".$e->getMessage();
+                      echo " Le numéro de l'erreur est : ".$e->getCode();
+                      die;
+                      $_SESSION["verif2"]=false;
+                      header('Location:inscription.php ');
+                  }
+             }
+             else{
+              $_SESSION["verif2"]=false;
+              header('Location:inscription.php ');
+             }
           }
-        catch(PDOException $e){
-            echo "erreur :".$e->getMessage();
-            echo " Le numéro de l'erreur est : ".$e->getCode();
-            die;
-        }
-        header('Location:index.php ');
+          else{
+            $_SESSION["verif2"]=false;
+            header('Location:inscription.php ');
+          }
+
+      
       ?>
 
 
